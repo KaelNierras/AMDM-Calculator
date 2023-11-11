@@ -213,7 +213,321 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       );
     }
-  }
+
+    //Point Load & Uniformly Distributed Combination 2 spans
+    if (selectedLoadType == 'Point Load' &&
+        selectedLoadType2 == 'Uniformly Distributed') {
+      String inputAB = _lengthControllerAB.text;
+      String inputBC = _lengthControllerBC.text;
+
+      //Getting Values from Inputs AB
+      String twospanLoadABInput = _2spanLoadAB.text;
+      String twospanLlABInput = _2spanLlAB.text;
+
+      //Getting Values from Inputs BC
+      String twospanLoadBCInput = _2spanLoadBC.text;
+
+      int lengthAB = int.tryParse(inputAB) ?? 0;
+      int lengthBC = int.tryParse(inputBC) ?? 0;
+
+      //Convert Values from Input AB to double
+      double twospanLoadABData = double.tryParse(twospanLoadABInput) ?? 0;
+      double twospanLlABData = double.tryParse(twospanLlABInput) ?? 0;
+
+      //Convert Values from Input AB to double
+      double twospanLoadBCData = double.tryParse(twospanLoadBCInput) ?? 0;
+
+      //Getting LCM
+      int lcm = calculateLCM(lengthAB, lengthBC);
+
+      //Getting Values of K
+      double kAB = lcm / lengthAB;
+      double kBC = lcm / lengthBC;
+
+      double dfA1 = 1;
+      double dfA2 = (kAB) / (kAB + kBC);
+      double dfB1 = (kBC) / (kAB + kBC);
+      double dfB2 = 1;
+
+      double femA1, femA2;
+      double femB1, femB2;
+
+      //Calculating FEM AB1
+      femA1 = (twospanLoadABData *
+              twospanLlABData *
+              ((lengthAB - twospanLlABData) * (lengthAB - twospanLlABData))) /
+          ((lengthAB) * (lengthAB));
+      if (femA1 > 0) {
+        femA1 = -femA1;
+      }
+
+      //Calculating FEM AB2
+      femA2 = (twospanLoadABData *
+              ((twospanLlABData) * (twospanLlABData)) *
+              ((lengthAB - twospanLlABData))) /
+          ((lengthAB) * (lengthAB));
+      if (femA2 < 0) {
+        femA2 = femA2.abs();
+      }
+
+      //Calculating FEM BC1
+      femB1 = (twospanLoadBCData * ((lengthBC) * (lengthBC))) / (12);
+      if (femB1 > 0) {
+        femB1 = -femB1;
+      }
+      print(
+          '($twospanLoadBCData * (($lengthBC) * ($lengthBC))) / 12 = ($femB1)');
+
+      //Calculating FEM BC2
+      femB2 = (twospanLoadBCData * ((lengthBC) * (lengthBC))) / (12);
+      femB2 = femB2.abs();
+
+      // Show modal dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Results'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Table(
+                  border: TableBorder.all(),
+                  children: [
+                    TableRow(
+                      children: [
+                        const TableCell(
+                          child: Center(child: Text('K')),
+                        ),
+                        TableCell(child: Center(child: Text(roundOff(kAB)))),
+                        TableCell(child: Center(child: Text(roundOff(kBC)))),
+                      ],
+                    ),
+                  ],
+                ),
+                Table(
+                  border: TableBorder.all(),
+                  children: [
+                    TableRow(
+                      children: [
+                        const TableCell(child: Center(child: Text('df'))),
+                        TableCell(child: Center(child: Text(roundOff(dfA1)))),
+                        TableCell(child: Center(child: Text(roundOff(dfA2)))),
+                        TableCell(child: Center(child: Text(roundOff(dfB1)))),
+                        TableCell(child: Center(child: Text(roundOff(dfB2)))),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        const TableCell(child: Center(child: Text('FEM'))),
+                        TableCell(child: Center(child: Text(roundOff(femA1)))),
+                        TableCell(child: Center(child: Text(roundOff(femA2)))),
+                        TableCell(child: Center(child: Text(roundOff(femB1)))),
+                        TableCell(child: Center(child: Text(roundOff(femB2)))),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Close'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => Results(
+                        kAB: kAB,
+                        kBC: kBC,
+                        dfA1: dfA1,
+                        dfA2: dfA2,
+                        dfB1: dfB1,
+                        dfB2: dfB2,
+                        femA1: femA1,
+                        femA2: femA2,
+                        femB1: femB1,
+                        femB2: femB2,
+                        selectedUnit: selectedUnit,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Show more'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    //Point Load & Varying Combination 2 spans
+    if (selectedLoadType == 'Point Load' && selectedLoadType2 == 'Varying') {
+      String inputAB = _lengthControllerAB.text;
+      String inputBC = _lengthControllerBC.text;
+
+      //Getting Values from Inputs AB
+      String twospanLoadABInput = _2spanLoadAB.text;
+      String twospanLlABInput = _2spanLlAB.text;
+
+      //Getting Values from Inputs BC
+      String twospanLoadBCInput = _2spanLoadBC.text;
+
+      int lengthAB = int.tryParse(inputAB) ?? 0;
+      int lengthBC = int.tryParse(inputBC) ?? 0;
+
+      //Convert Values from Input AB to double
+      double twospanLoadABData = double.tryParse(twospanLoadABInput) ?? 0;
+      double twospanLlABData = double.tryParse(twospanLlABInput) ?? 0;
+
+      //Convert Values from Input AB to double
+      double twospanLoadBCData = double.tryParse(twospanLoadBCInput) ?? 0;
+
+      //Getting LCM
+      int lcm = calculateLCM(lengthAB, lengthBC);
+
+      //Getting Values of K
+      double kAB = lcm / lengthAB;
+      double kBC = lcm / lengthBC;
+
+      double dfA1 = 1;
+      double dfA2 = (kAB) / (kAB + kBC);
+      double dfB1 = (kBC) / (kAB + kBC);
+      double dfB2 = 1;
+
+      double femA1, femA2;
+      double femB1, femB2;
+
+      //Calculating FEM AB1
+      femA1 = (twospanLoadABData *
+              twospanLlABData *
+              ((lengthAB - twospanLlABData) * (lengthAB - twospanLlABData))) /
+          ((lengthAB) * (lengthAB));
+      if (femA1 > 0) {
+        femA1 = -femA1;
+      }
+
+      //Calculating FEM AB2
+      femA2 = (twospanLoadABData *
+              ((twospanLlABData) * (twospanLlABData)) *
+              ((lengthAB - twospanLlABData))) /
+          ((lengthAB) * (lengthAB));
+      if (femA2 < 0) {
+        femA2 = femA2.abs();
+      }
+
+      //Calculating FEM BC1
+      femB1 = (twospanLoadBCData * ((lengthBC) * (lengthBC))) / (30);
+      if (femB1 > 0) {
+        femB1 = -femB1;
+      }
+      print(
+          '($twospanLoadBCData * (($lengthBC) * ($lengthBC))) / 12 = ($femB1)');
+
+      //Calculating FEM BC2
+      femB2 = (twospanLoadBCData * ((lengthBC) * (lengthBC))) / (20);
+      femB2 = femB2.abs();
+
+      // Show modal dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Results'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Table(
+                  border: TableBorder.all(),
+                  children: [
+                    TableRow(
+                      children: [
+                        const TableCell(
+                          child: Center(child: Text('K')),
+                        ),
+                        TableCell(child: Center(child: Text(roundOff(kAB)))),
+                        TableCell(child: Center(child: Text(roundOff(kBC)))),
+                      ],
+                    ),
+                  ],
+                ),
+                Table(
+                  border: TableBorder.all(),
+                  children: [
+                    TableRow(
+                      children: [
+                        const TableCell(child: Center(child: Text('df'))),
+                        TableCell(child: Center(child: Text(roundOff(dfA1)))),
+                        TableCell(child: Center(child: Text(roundOff(dfA2)))),
+                        TableCell(child: Center(child: Text(roundOff(dfB1)))),
+                        TableCell(child: Center(child: Text(roundOff(dfB2)))),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        const TableCell(child: Center(child: Text('FEM'))),
+                        TableCell(child: Center(child: Text(roundOff(femA1)))),
+                        TableCell(child: Center(child: Text(roundOff(femA2)))),
+                        TableCell(child: Center(child: Text(roundOff(femB1)))),
+                        TableCell(child: Center(child: Text(roundOff(femB2)))),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Close'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => Results(
+                        kAB: kAB,
+                        kBC: kBC,
+                        dfA1: dfA1,
+                        dfA2: dfA2,
+                        dfB1: dfB1,
+                        dfB2: dfB2,
+                        femA1: femA1,
+                        femA2: femA2,
+                        femB1: femB1,
+                        femB2: femB2,
+                        selectedUnit: selectedUnit,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Show more'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+
+
+
+
+
+ 
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
